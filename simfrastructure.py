@@ -29,7 +29,11 @@ class sim_datacenter:
       for server in rack.servers:
         if kind in server.guests.keys():
           usage = server.get_server_usage()
-          if usage["vcpu"] + guest_capacity["vcpu"] <= server.capacity["vcpu"] and usage["ram"] + guest_capacity["ram"] <= server.capacity["ram"]:
+          suitable = True
+          for k in usage.keys():
+            if usage[k] + guest_capacity[k] > server.capacity[k]:
+              suitable = False
+          if suitable:
             suitable_objects.append(server)
         if server.guests["vms"]:
           for vm in server.guests["vms"]:
@@ -209,7 +213,7 @@ def init_infrastructure():
   vm1.set_vm_capability(["containers"])
 
   vm2 = sim_vm("dc1_vm2", 1, 1)
-  vm2.add_logical_object_in_dc(dc2)
+  vm2.add_logical_object_in_dc(dc1)
   
   """cont1 = sim_container("dc1_cont1", 1, 1)
   cont1.add_logical_object_in_dc(dc1)"""
