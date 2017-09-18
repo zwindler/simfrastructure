@@ -5,11 +5,10 @@ import configparser"""
 
 class sim_datacenter:
   """A datacenter that can contain racks"""
-  rack_max = None
-  racks = []
-  
   def __init__(self, name):
     self.name = name
+    self.racks = []
+    self.rack_max = None
 
   """Set maximum number of racks in DC"""
   def set_rack_max(self, rack_max):
@@ -19,9 +18,23 @@ class sim_datacenter:
     if (not isinstance(rack, sim_rack)):
       return rack.name+" is not a rack!"
     if ( self.rack_max == None or len(racks) < self.rack_max ):
-      self.racks = [rack]
+      self.racks.append(rack)
     else:
       return self.name+" is full, can't add rack!"
+
+  def find_suitable_host(self, kind, vcpu, ram):
+    suitable_objects = []
+    for rack in self.racks:
+      for server in rack.servers:
+        if kind in server.capability:
+          usage = server.get_server_usage()
+          if usage["vcpu"] + vcpu <= server.vcpu_max_capacity and usage["ram"] + ram <= server.ram_max_capacity:
+            suitable_objects.append(server)
+        if server.vms:
+          for vm in server.vms:
+            if kind in vm.capability:
+              print("TODO")
+    return suitable_objects
 
   def __str__(self):
     output = "-Datacenter "+self.name+"\n"
@@ -32,12 +45,11 @@ class sim_datacenter:
     return output
   
 class sim_rack:
-  """A rack that can contain servers"""
-  rack_size = 42
-  servers = []
-  
+  """A rack that can contain servers"""  
   def __init__(self, name):
     self.name = name
+    self.servers = []
+    self.rack_size = 42
 
   """Set maximum number of servers units in rack"""
   def set_rack_size(self, rack_size):
@@ -54,7 +66,7 @@ class sim_rack:
       return server.name+" is not a server!"
     rack_usage = self.get_rack_usage()
     if ( self.rack_size == None or rack_usage < self.rack_size):
-      self.servers = [server]
+      self.servers.append(server)
     else:
       return self.name+" is full, can't add server!"
 
@@ -68,15 +80,14 @@ class sim_rack:
 
 class sim_server:
   """A 2U server that may run containers or virtual machines or both"""
-  server_size = 2
-  vcpu_max_capacity = None
-  ram_max_capacity = None
-  capability = []
-  vms = None
-  containers = None
-  
   def __init__(self, name):
     self.name = name
+    self.capability = []
+    self.server_size = 2
+    self.vcpu_max_capacity = None
+    self.ram_max_capacity = None
+    self.vms = None
+    self.containers = None
 
   """Set the ability to run VMs or containers"""
   def set_server_capability(self, capability):
@@ -115,7 +126,6 @@ class sim_server:
       for vm in self.vms:
         output += str(vm)+"\n"
     if "container" in self.capability:
-      print (self.capability)
       output += "          Can run containers\n"
     if (self.containers):
       for container in self.containers:
@@ -123,12 +133,9 @@ class sim_server:
     return output
 
 class sim_logical_object:
-  vcpu_alloc = None
-  gigabytes_ram_alloc = None
-
   """Allocate vm or container in a specified DC"""
   def add_logical_object_in_dc(self, dc):
-    print("TODO")
+    host = dc.find_suitable_host(self.kind, self.vcpu_alloc, self.gigabytes_ram_alloc)
 
   """Force VM or container allocation on a specified server"""
   def add_logical_object_on_server(self, server):
@@ -146,8 +153,6 @@ class sim_logical_object:
     
 class sim_vm(sim_logical_object):
   """A VM on a server that can execute VMs"""
-  capability = []
-  containers = None
   kind = "vm"
   
   """Set the ability to run VMs or containers"""
@@ -194,7 +199,15 @@ def init_infrastructure():
   srv2.set_server_capability(["vm"])
   rack2.add_server(srv2)
 
-  vm1 = sim_vm("dc1_vm1", 2, 4)
+  srv3 = sim_server("dc1_rack1_srv3")
+  srv3.set_server_capability(["vm"])
+  """Server with 1 sockets, 1 cores each socket, 4 vCPU each core"""
+  srv3.set_vcpu_max_capacity(1*1*4)
+  """Server with 1 stick of 16GB of RAM"""
+  srv3.set_ram_max_capacity(16)
+  rack1.add_server(srv3)
+
+  vm1 = sim_vm("dc1_vm1", 8, 16)
   vm1.add_logical_object_in_dc(dc1)
   vm1.set_vm_capability(["container"])
   
