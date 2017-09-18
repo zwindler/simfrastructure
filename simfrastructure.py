@@ -83,6 +83,14 @@ class sim_server:
   def set_server_can_run_containers(self, can_run_containers):
     self.can_run_containers = can_run_containers   
 
+  """Set the vCPU limit on server"""
+  def set_vcpu_max_capacity(self, vcpu_max_capacity):
+    self.vcpu_max_capacity = vcpu_max_capacity
+
+  """Set the RAM limit on server"""
+  def set_ram_max_capacity(self, ram_max_capacity):
+    self.ram_max_capacity = ram_max_capacity
+
   def __str__(self):
     output ="    Server name: "+self.name+"\n"
     output += "    Server size : "+str(self.server_size)+"U\n"
@@ -149,6 +157,10 @@ def init_infrastructure():
 
   srv1 = sim_server("dc1_rack1_srv1")
   srv1.set_server_can_run_vms(True)
+  """Server with 2 sockets, 14 cores each socket, 4 vCPU each core"""
+  srv1.set_vcpu_max_capacity(2*14*4)
+  """Server with 12 sticks of 16GB of RAM"""
+  srv1.set_ram_max_capacity(12*16)
   rack1.add_server(srv1)
   srv2 = sim_server("dc2_rack2_srv2")
   srv2.set_server_can_run_vms(True)
