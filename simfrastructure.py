@@ -33,7 +33,7 @@ class sim_datacenter:
             suitable_objects.append(server)
         if server.guests["vms"]:
           for vm in server.guests["vms"]:
-            if kind in vm.capability:
+            if kind in vm.guests.keys():
               print("TODO")
     return random.choice(suitable_objects)
 
@@ -88,7 +88,7 @@ class sim_server:
     self.ram_max_capacity = None
     self.guests = {}
 
-  """Set the ability to run VMs or containers"""
+  """Set the ability to run VMs or containers or both"""
   def set_server_capability(self, capabilities):
     for capability in capabilities:
       self.guests[capability] = []
@@ -114,7 +114,7 @@ class sim_server:
       return True
 
   def register_logical_object_to_host(self, guest):
-    print("TODO")
+    self.guests[guest.kind].append(guest)
 
   def __str__(self):
     output ="        *"+self.name+"\n"
@@ -147,9 +147,8 @@ class sim_logical_object:
     print(guest)
 
   def print_name_cpu_ram(self):
-    output ="          %"+self.name+"\n"
-    output +="           "+str(self.vcpu_alloc)+"\n"
-    output +="           "+str(self.gigabytes_ram_alloc)+"\n"    
+    output ="          %"+self.name+" "+str(self.vcpu_alloc)+"vCPU/"+str(self.gigabytes_ram_alloc)+"GB RAM\n"
+    return output
 
   def __init__(self, name, vcpu_alloc, gigabytes_ram_alloc):
     self.name = name
@@ -166,10 +165,9 @@ class sim_vm(sim_logical_object):
       self.guests[capability] = []
      
   def __str__(self):
-    output = ""
-    self.print_name_cpu_ram()
+    output = self.print_name_cpu_ram()
     if "containers" in self.guests.keys():
-      output += "          Can run containers\n"
+      output += "            Can run containers\n"
       for container in self.guests["containers"]:
         output += str(container)+"\n"
     return output
@@ -224,6 +222,9 @@ def init_infrastructure():
   vm1 = sim_vm("dc1_vm1", 8, 16)
   vm1.add_logical_object_in_dc(dc1)
   vm1.set_vm_capability(["containers"])
+
+  vm2 = sim_vm("dc1_vm2", 1, 1)
+  vm2.add_logical_object_in_dc(dc1)
   
   """cont1 = sim_container("dc1_cont1", 1, 1)
   cont1.add_logical_object_in_dc(dc1)"""
