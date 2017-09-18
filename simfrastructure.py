@@ -43,7 +43,7 @@ class sim_rack:
   def set_rack_size(self, rack_size):
     self.rack_size = rack_size
 
-  def check_rack_usage(self):
+  def get_rack_usage(self):
     rack_usage = 0
     for server in self.servers:
       rack_usage += server.server_size
@@ -52,7 +52,7 @@ class sim_rack:
   def add_server(self, server):
     if (not isinstance(server, sim_server)):
       return server.name+" is not a server!"
-    rack_usage = self.check_rack_usage()
+    rack_usage = self.get_rack_usage()
     if ( self.rack_size == None or rack_usage < self.rack_size):
       self.servers = [server]
     else:
@@ -60,7 +60,7 @@ class sim_rack:
 
   def __str__(self):
     output = "    +"+self.name+"\n"
-    output += "      Rack usage: "+str(self.check_rack_usage())+"/"+str(self.rack_size)+"U\n"
+    output += "      Rack usage: "+str(self.get_rack_usage())+"/"+str(self.rack_size)+"U\n"
     output += "      Servers in this rack: \n"
     for server in self.servers:
       output += str(server)
@@ -95,7 +95,7 @@ class sim_server:
   def set_ram_max_capacity(self, ram_max_capacity):
     self.ram_max_capacity = ram_max_capacity
 
-  def check_server_usage(self):
+  def get_server_usage(self):
     server_usage = {"vcpu" : 0, "ram" : 0}
     if self.vms or self.containers:
       for logical_object in self.vms + self.containers:
@@ -107,9 +107,9 @@ class sim_server:
     output ="        *"+self.name+"\n"
     output += "          Server size : "+str(self.server_size)+"U\n"
     if self.vcpu_max_capacity:
-      output += "          Server vCPU usage: "+str(self.check_server_usage()["vcpu"])+"/"+str(self.vcpu_max_capacity)+" vCPU\n"
+      output += "          Server vCPU usage: "+str(self.get_server_usage()["vcpu"])+"/"+str(self.vcpu_max_capacity)+" vCPU\n"
     if self.ram_max_capacity:
-      output += "          Server RAM usage: "+str(self.check_server_usage()["ram"])+"/"+str(self.ram_max_capacity)+" GB RAM\n"
+      output += "          Server RAM usage: "+str(self.get_server_usage()["ram"])+"/"+str(self.ram_max_capacity)+" GB RAM\n"
     if self.can_run_vms:
       output += "          Can run VMs\n"
     if (self.vms):
