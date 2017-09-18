@@ -24,9 +24,9 @@ class sim_datacenter:
       return self.name+" is full, can't add rack!"
 
   def __str__(self):
-    output = "Datacenter name: "+self.name+"\n"
-    output += "Datacenter size: "+str(self.rack_max)+"\n"
-    output += "Racks in this datacenter: \n"
+    output = "-Datacenter "+self.name+"\n"
+    output += "  Datacenter size: "+str(self.rack_max)+"\n"
+    output += "  Racks in this datacenter: \n"
     for rack in self.racks:
       output += str(rack)
     return output
@@ -59,9 +59,9 @@ class sim_rack:
       return self.name+" is full, can't add server!"
 
   def __str__(self):
-    output = "  Rack name: "+self.name+"\n"
-    output += "  Rack usage: "+str(self.check_rack_usage())+"/"+str(self.rack_size)+"U\n"
-    output += "  Servers in this rack: \n"
+    output = "    +"+self.name+"\n"
+    output += "      Rack usage: "+str(self.check_rack_usage())+"/"+str(self.rack_size)+"U\n"
+    output += "      Servers in this rack: \n"
     for server in self.servers:
       output += str(server)
     return output
@@ -96,17 +96,17 @@ class sim_server:
     self.ram_max_capacity = ram_max_capacity
 
   def __str__(self):
-    output ="    Server name: "+self.name+"\n"
-    output += "    Server size : "+str(self.server_size)+"U\n"
+    output ="        *"+self.name+"\n"
+    output += "          Server size : "+str(self.server_size)+"U\n"
     if self.vcpu_max_capacity:
-      output += "    Server vCPU capacity: "+str(self.vcpu_max_capacity)+" vCPU\n"
+      output += "          Server vCPU capacity: "+str(self.vcpu_max_capacity)+" vCPU\n"
     if self.ram_max_capacity:
-      output += "    Server RAM capacity: "+str(self.ram_max_capacity)+" GB RAM\n"
-    output += "    Can server run VMs ? "+str(self.can_run_vms)+"\n"
+      output += "          Server RAM capacity: "+str(self.ram_max_capacity)+" GB RAM\n"
+    output += "          Can server run VMs ? "+str(self.can_run_vms)+"\n"
     if (self.vms):
       for vm in self.vms:
         output += str(vm)+"\n"
-    output += "    Can server run containers ? "+str(self.can_run_containers)+"\n"
+    output += "          Can server run containers ? "+str(self.can_run_containers)+"\n"
     if (self.containers):
       for container in self.containers:
         output += str(container)+"\n"
