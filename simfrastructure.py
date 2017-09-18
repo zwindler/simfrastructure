@@ -69,28 +69,72 @@ class sim_server:
   ram_max_capacity = None
   can_run_vms = False
   can_run_containers = False
+  vms = None
+  containers = None
   
   def __init__(self, name):
     self.name = name
 
   """Set the ability to run VMs"""
-  def set_server_max(self, can_run_vms):
+  def set_server_can_run_vms(self, can_run_vms):
     self.can_run_vms = can_run_vms
 
   """Set the ability to run containers"""
-  def set_server_max(self, can_run_containers):
+  def set_server_can_run_containers(self, can_run_containers):
     self.can_run_containers = can_run_containers   
 
   def __str__(self):
     output ="    Server name: "+self.name+"\n"
     output += "    Server size : "+str(self.server_size)+"U\n"
-    if self.vcpu_max_capacity:
-      output += "    Server vCPU capacity: "+str(self.vcpu_max_capacity)+" vCPU\n"
-    if self.ram_max_capacity:
-      output += "    Server RAM capacity: "+str(self.ram_max_capacity)+" GB RAM\n"
-    output += "    Can server run VMs : "+str(self.can_run_vms)+"\n"
-    output += "    Can server run containers : "+str(self.can_run_containers)+"\n"
+    output += "    Server vCPU capacity: "+str(self.vcpu_max_capacity)+" vCPU\n"
+    output += "    Server RAM capacity: "+str(self.ram_max_capacity)+" GB RAM\n"
+    output += "    Can server run VMs ? "+str(self.can_run_vms)+"\n"
+    if (self.vms):
+      for vm in self.vms:
+        output += str(vm)+"\n"
+    output += "    Can server run containers ? "+str(self.can_run_containers)+"\n"
+    if (self.containers):
+      for container in self.containers:
+        output += str(container)+"\n"
     return output
+
+class sim_logical_object:
+  vcpu_alloc = None
+  gigabytes_ram_alloc = None
+
+  """Allocate vm or container in a specified DC"""
+  def add_logical_object_in_dc(self, dc):
+    print("TODO")
+
+  """Force VM or container allocation on a specified server"""
+  def add_logical_object_on_server(server):
+    print("TODO")
+
+  def __init__(self, name, vcpu_alloc, gigabytes_ram_alloc):
+    self.name = name
+    self.vcpu_alloc = vcpu_alloc
+    self.gigabytes_ram_alloc = gigabytes_ram_alloc
+
+  def __str__(self):
+    output ="      VM name: "+self.name+"\n"
+    
+class sim_vm(sim_logical_object):
+  """A VM on a server that can execute VMs"""
+  containers = None
+     
+  def __str__(self):
+    output ="      VM name: "+self.name+"\n"
+    if (self.containers):
+      for container in self.containers:
+        output += str(container)+"\n"
+    return output
+
+class sim_container(sim_logical_object):
+  """A container on a server that can execute containers"""
+  
+  """Force container allocation on a specified VM"""
+  def add_container_on_vm(vm):
+    print("TODO")
 
 def init_infrastructure():
   dc1 = sim_datacenter("dc1")
@@ -102,10 +146,17 @@ def init_infrastructure():
   dc2.add_rack(rack2)
 
   srv1 = sim_server("dc1_rack1_srv1")
+  srv1.set_server_can_run_vms(True)
   rack1.add_server(srv1)
   srv2 = sim_server("dc2_rack2_srv2")
+  srv2.set_server_can_run_vms(True)
   rack2.add_server(srv2)
 
+  vm1 = sim_vm("dc1_vm1", 2, 4)
+  vm1.add_logical_object_in_dc(dc1)
+  cont1 = sim_container("dc1_cont1", 1, 1)
+  cont1.add_logical_object_in_dc(dc1)
+  
   print(dc1)
   
 def usage():
