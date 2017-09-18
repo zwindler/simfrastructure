@@ -27,11 +27,11 @@ class sim_datacenter:
     suitable_objects = []
     for rack in self.racks:
       for server in rack.servers:
-        if kind in server.guests.keys() and server.has_enough_ressources(guest_capacity):
+        if server.host_capability(kind) and server.has_enough_ressources(guest_capacity):
           suitable_objects.append(server)
         if server.guests["vms"]:
           for vm in server.guests["vms"]:
-            if kind in vm.guests.keys() and vm.has_enough_ressources(guest_capacity):
+            if vm.host_capability(kind) and vm.has_enough_ressources(guest_capacity):
               suitable_objects.append(vm)
     return random.choice(suitable_objects)
 
@@ -83,7 +83,7 @@ class sim_host:
     suitable = True
     for k in usage.keys():
       if usage[k] + guest_capacity[k] > self.capacity[k]:
-        suitable = False
+        return None
     return self
 
   def get_host_usage(self):
@@ -94,7 +94,7 @@ class sim_host:
         host_usage["ram"] += logical_object.capacity["ram"]
     return host_usage
 
-  def check_host_capability(self, kind):
+  def host_capability(self, kind):
     if kind in self.guests.keys() :
       return True
     return False
@@ -229,27 +229,7 @@ def usage():
   return ''
 
 def main():
-  """#default, can be overriden  
-  config_file_path = 'example.cfg'
-
-  try:
-    opts, args = getopt.getopt(sys.argv[1:], 'c:h', ['config=', 'help'])
-  except getopt.GetoptError:
-    usage()
-    sys.exit(2)
-
-  for o, a in opts:
-    if o in ('-c', '--config'):
-      config_file_path = a
-    if o in ('-h', '--help'):
-      usage()
-
-  config = configparser.RawConfigParser()
-  config.read(config_file_path)
-  test = [config.get('Test', 'Test_output')]"""
-
   init_infrastructure()
-  
   sys.exit()
 
 if __name__ == '__main__':
