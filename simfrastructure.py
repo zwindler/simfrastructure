@@ -27,12 +27,13 @@ class sim_datacenter:
     suitable_objects = []
     for rack in self.racks:
       for server in rack.servers:
-        if kind in server.capability:
+        print(server.guests.keys())
+        if kind in server.guests.keys():
           usage = server.get_server_usage()
           if usage["vcpu"] + vcpu <= server.vcpu_max_capacity and usage["ram"] + ram <= server.ram_max_capacity:
             suitable_objects.append(server)
-        if server.vms:
-          for vm in server.vms:
+        if server.guests["vms"]:
+          for vm in server.guests["vms"]:
             if kind in vm.capability:
               print("TODO")
     return random.choice(suitable_objects)
@@ -87,12 +88,12 @@ class sim_server:
     self.server_size = 2
     self.vcpu_max_capacity = None
     self.ram_max_capacity = None
-    self.vms = None
-    self.containers = None
+    self.guests = {}
 
   """Set the ability to run VMs or containers"""
-  def set_server_capability(self, capability):
-    self.capability = capability
+  def set_server_capability(self, capabilities):
+    for capability in capabilities:
+      self.guests[capability] = []
 
   """Set the vCPU limit on server"""
   def set_vcpu_max_capacity(self, vcpu_max_capacity):
@@ -104,14 +105,14 @@ class sim_server:
 
   def get_server_usage(self):
     server_usage = {"vcpu" : 0, "ram" : 0}
-    if self.vms or self.containers:
-      for logical_object in self.vms + self.containers:
+    for k, v in self.guests.items():
+      for logical_object in v:
         server_usage["vcpu"] += logical_object.vcpu_alloc
         server_usage["ram"] += logical_object.gigabytes_ram_alloc
     return server_usage
 
   def check_server_capability(self, kind, vcpu, ram):
-    if kind in capability:
+    if kind in self.guests.keys() :
       return True
 
   def register_logical_object_to_host(self, guest):
@@ -124,15 +125,13 @@ class sim_server:
       output += "          Server vCPU usage: "+str(self.get_server_usage()["vcpu"])+"/"+str(self.vcpu_max_capacity)+" vCPU\n"
     if self.ram_max_capacity:
       output += "          Server RAM usage: "+str(self.get_server_usage()["ram"])+"/"+str(self.ram_max_capacity)+" GB RAM\n"
-    if "vm" in self.capability:
+    if "vms" in self.guests.keys():
       output += "          Can run VMs\n"
-    if (self.vms):
-      for vm in self.vms:
+      for vm in self.guests["vms"]:
         output += str(vm)+"\n"
-    if "container" in self.capability:
+    if "containers" in self.guests.keys():
       output += "          Can run containers\n"
-    if (self.containers):
-      for container in self.containers:
+      for container in self.guests["containers"]:
         output += str(container)+"\n"
     return output
 
@@ -161,7 +160,7 @@ class sim_logical_object:
     
 class sim_vm(sim_logical_object):
   """A VM on a server that can execute VMs"""
-  kind = "vm"
+  kind = "vms"
   
   """Set the ability to run VMs or containers"""
   def set_vm_capability(self, capability):
@@ -183,7 +182,7 @@ class sim_vm(sim_logical_object):
     
 class sim_container(sim_logical_object):
   """A container on a server that can execute containers"""
-  kind = "container"
+  kind = "containers"
 
   """Force container allocation on a specified VM"""
   def add_container_on_vm(self, vm):
@@ -203,7 +202,7 @@ def init_infrastructure():
   dc2.add_rack(rack2)
 
   srv1 = sim_server("dc1_rack1_srv1")
-  srv1.set_server_capability(["vm","container"])
+  srv1.set_server_capability(["vms","containers"])
   """Server with 2 sockets, 14 cores each socket, 4 vCPU each core"""
   srv1.set_vcpu_max_capacity(2*14*4)
   """Server with 12 sticks of 16GB of RAM"""
@@ -211,11 +210,11 @@ def init_infrastructure():
   rack1.add_server(srv1)
   
   srv2 = sim_server("dc2_rack2_srv2")
-  srv2.set_server_capability(["vm"])
+  srv2.set_server_capability(["vms"])
   rack2.add_server(srv2)
 
   srv3 = sim_server("dc1_rack1_srv3")
-  srv3.set_server_capability(["vm"])
+  srv3.set_server_capability(["vms"])
   """Server with 1 sockets, 1 cores each socket, 4 vCPU each core"""
   srv3.set_vcpu_max_capacity(1*1*4)
   """Server with 1 stick of 16GB of RAM"""
@@ -224,7 +223,7 @@ def init_infrastructure():
 
   vm1 = sim_vm("dc1_vm1", 8, 16)
   vm1.add_logical_object_in_dc(dc1)
-  vm1.set_vm_capability(["container"])
+  vm1.set_vm_capability(["containers"])
   
   """cont1 = sim_container("dc1_cont1", 1, 1)
   cont1.add_logical_object_in_dc(dc1)"""
