@@ -27,7 +27,6 @@ class sim_datacenter:
     suitable_objects = []
     for rack in self.racks:
       for server in rack.servers:
-        print(server.guests.keys())
         if kind in server.guests.keys():
           usage = server.get_server_usage()
           if usage["vcpu"] + vcpu <= server.vcpu_max_capacity and usage["ram"] + ram <= server.ram_max_capacity:
@@ -84,7 +83,6 @@ class sim_server:
   """A 2U server that may run containers or virtual machines or both"""
   def __init__(self, name):
     self.name = name
-    self.capability = []
     self.server_size = 2
     self.vcpu_max_capacity = None
     self.ram_max_capacity = None
@@ -163,14 +161,16 @@ class sim_vm(sim_logical_object):
   kind = "vms"
   
   """Set the ability to run VMs or containers"""
-  def set_vm_capability(self, capability):
-    self.capability = capability
+  def set_vm_capability(self, capabilities):
+    for capability in capabilities:
+      self.guests[capability] = []
      
   def __str__(self):
     output = ""
     self.print_name_cpu_ram()
-    if (self.containers):
-      for container in self.containers:
+    if "containers" in self.guests.keys():
+      output += "          Can run containers\n"
+      for container in self.guests["containers"]:
         output += str(container)+"\n"
     return output
 
@@ -178,7 +178,7 @@ class sim_vm(sim_logical_object):
     self.name = name
     self.vcpu_alloc = vcpu_alloc
     self.gigabytes_ram_alloc = gigabytes_ram_alloc
-    self.containers = []
+    self.guests = {}
     
 class sim_container(sim_logical_object):
   """A container on a server that can execute containers"""
