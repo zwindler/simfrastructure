@@ -138,8 +138,8 @@ class sim_logical_object:
     print("TODO")
     
   """Force VM or container allocation on a specified server"""
-  def add_logical_object_on_server(self, server):
-    print(guest)
+  """def add_logical_object_on_server(self, server):
+    print(guest)"""
 
   def print_name_cpu_ram(self):
     output ="          %"+self.name+" "+str(self.capacity["vcpu"])+"vCPU/"+str(self.capacity["ram"])+"GB RAM\n"
@@ -176,11 +176,11 @@ class sim_container(sim_logical_object):
   kind = "containers"
 
   """Force container allocation on a specified VM"""
-  def add_container_on_vm(self, vm):
-    print("TODO")
+  """def add_container_on_vm(self, vm):
+    print("TODO")"""
 
   def __str__(self):
-    self.print_name_cpu_ram()
+    output = self.print_name_cpu_ram()
     return output
 
 def init_infrastructure():
@@ -215,8 +215,8 @@ def init_infrastructure():
   vm2 = sim_vm("dc1_vm2", 1, 1)
   vm2.add_logical_object_in_dc(dc1)
   
-  """cont1 = sim_container("dc1_cont1", 1, 1)
-  cont1.add_logical_object_in_dc(dc1)"""
+  cont1 = sim_container("dc1_cont1", 1, 1)
+  cont1.add_logical_object_in_dc(dc1)
   
   print(dc1)
   print(dc2)
