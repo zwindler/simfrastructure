@@ -95,13 +95,21 @@ class sim_server:
   def set_ram_max_capacity(self, ram_max_capacity):
     self.ram_max_capacity = ram_max_capacity
 
+  def check_server_usage(self):
+    server_usage = {"vcpu" : 0, "ram" : 0}
+    if self.vms or self.containers:
+      for logical_object in self.vms + self.containers:
+        server_usage["vcpu"] += logical_object.vcpu_alloc
+        server_usage["ram"] += logical_object.gigabytes_ram_alloc
+    return server_usage
+
   def __str__(self):
     output ="        *"+self.name+"\n"
     output += "          Server size : "+str(self.server_size)+"U\n"
     if self.vcpu_max_capacity:
-      output += "          Server vCPU capacity: "+str(self.vcpu_max_capacity)+" vCPU\n"
+      output += "          Server vCPU usage: "+str(self.check_server_usage()["vcpu"])+"/"+str(self.vcpu_max_capacity)+" vCPU\n"
     if self.ram_max_capacity:
-      output += "          Server RAM capacity: "+str(self.ram_max_capacity)+" GB RAM\n"
+      output += "          Server RAM usage: "+str(self.check_server_usage()["ram"])+"/"+str(self.ram_max_capacity)+" GB RAM\n"
     if self.can_run_vms:
       output += "          Can run VMs\n"
     if (self.vms):
