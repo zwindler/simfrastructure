@@ -86,8 +86,10 @@ class sim_server:
   def __str__(self):
     output ="    Server name: "+self.name+"\n"
     output += "    Server size : "+str(self.server_size)+"U\n"
-    output += "    Server vCPU capacity: "+str(self.vcpu_max_capacity)+" vCPU\n"
-    output += "    Server RAM capacity: "+str(self.ram_max_capacity)+" GB RAM\n"
+    if self.vcpu_max_capacity:
+      output += "    Server vCPU capacity: "+str(self.vcpu_max_capacity)+" vCPU\n"
+    if self.ram_max_capacity:
+      output += "    Server RAM capacity: "+str(self.ram_max_capacity)+" GB RAM\n"
     output += "    Can server run VMs ? "+str(self.can_run_vms)+"\n"
     if (self.vms):
       for vm in self.vms:
