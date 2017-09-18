@@ -27,18 +27,12 @@ class sim_datacenter:
     suitable_objects = []
     for rack in self.racks:
       for server in rack.servers:
-        if kind in server.guests.keys():
-          usage = server.get_server_usage()
-          suitable = True
-          for k in usage.keys():
-            if usage[k] + guest_capacity[k] > server.capacity[k]:
-              suitable = False
-          if suitable:
-            suitable_objects.append(server)
+        if kind in server.guests.keys() and server.has_enough_ressources(guest_capacity):
+          suitable_objects.append(server)
         if server.guests["vms"]:
           for vm in server.guests["vms"]:
-            if kind in vm.guests.keys():
-              print("TODO")
+            if kind in vm.guests.keys() and vm.has_enough_ressources(guest_capacity):
+              suitable_objects.append(vm)
     return random.choice(suitable_objects)
 
   def __str__(self):
@@ -83,7 +77,29 @@ class sim_rack:
       output += str(server)
     return output
 
-class sim_server:
+class sim_host:
+  def has_enough_ressources(self, guest_capacity):
+    usage = self.get_host_usage()
+    suitable = True
+    for k in usage.keys():
+      if usage[k] + guest_capacity[k] > self.capacity[k]:
+        suitable = False
+    return self
+
+  def get_host_usage(self):
+    host_usage = {"vcpu" : 0, "ram" : 0}
+    for k, v in self.guests.items():
+      for logical_object in v:
+        host_usage["vcpu"] += logical_object.capacity["vcpu"]
+        host_usage["ram"] += logical_object.capacity["ram"]
+    return host_usage
+
+  def check_host_capability(self, kind):
+    if kind in self.guests.keys() :
+      return True
+    return False
+
+class sim_server(sim_host):
   """A 2U server that may run containers or virtual machines or both"""
   def __init__(self, name, vcpu_max_capacity, ram_max_capacity):
     self.name = name
@@ -96,18 +112,6 @@ class sim_server:
     for capability in capabilities:
       self.guests[capability] = []
 
-  def get_server_usage(self):
-    server_usage = {"vcpu" : 0, "ram" : 0}
-    for k, v in self.guests.items():
-      for logical_object in v:
-        server_usage["vcpu"] += logical_object.capacity["vcpu"]
-        server_usage["ram"] += logical_object.capacity["ram"]
-    return server_usage
-
-  def check_server_capability(self, kind, vcpu, ram):
-    if kind in self.guests.keys() :
-      return True
-
   def register_logical_object_to_host(self, guest):
     self.guests[guest.kind].append(guest)
 
@@ -115,9 +119,9 @@ class sim_server:
     output ="        *"+self.name+"\n"
     output += "          Server size : "+str(self.server_size)+"U\n"
     if self.capacity["vcpu"]:
-      output += "          Server vCPU usage: "+str(self.get_server_usage()["vcpu"])+"/"+str(self.capacity["vcpu"])+" vCPU\n"
+      output += "          Server vCPU usage: "+str(self.get_host_usage()["vcpu"])+"/"+str(self.capacity["vcpu"])+" vCPU\n"
     if self.capacity["ram"]:
-      output += "          Server RAM usage: "+str(self.get_server_usage()["ram"])+"/"+str(self.capacity["ram"])+" GB RAM\n"
+      output += "          Server RAM usage: "+str(self.get_host_usage()["ram"])+"/"+str(self.capacity["ram"])+" GB RAM\n"
     if "vms" in self.guests.keys():
       output += "          Can run VMs\n"
       for vm in self.guests["vms"]:
@@ -128,7 +132,7 @@ class sim_server:
         output += str(container)+"\n"
     return output
 
-class sim_logical_object:
+class sim_logical_object(sim_host):
   """Allocate vm or container in a specified DC"""
   def add_logical_object_in_dc(self, dc):
     host = dc.find_suitable_host(self.kind, self.capacity)
