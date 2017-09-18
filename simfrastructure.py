@@ -72,8 +72,8 @@ class sim_server:
   vcpu_max_capacity = None
   ram_max_capacity = None
   can_run_vms = False
-  can_run_containers = False
   vms = None
+  can_run_containers = False
   containers = None
   
   def __init__(self, name):
@@ -136,7 +136,12 @@ class sim_logical_object:
     
 class sim_vm(sim_logical_object):
   """A VM on a server that can execute VMs"""
+  can_run_containers = False
   containers = None
+
+  """Set the ability to run containers"""
+  def set_vm_can_run_containers(self, can_run_containers):
+    self.can_run_containers = can_run_containers   
      
   def __str__(self):
     output ="      VM name: "+self.name+"\n"
