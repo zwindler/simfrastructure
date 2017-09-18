@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import sys
+import random
 """import getopt
 import configparser"""
 
@@ -34,7 +35,7 @@ class sim_datacenter:
           for vm in server.vms:
             if kind in vm.capability:
               print("TODO")
-    return suitable_objects
+    return random.choice(suitable_objects)
 
   def __str__(self):
     output = "-Datacenter "+self.name+"\n"
@@ -113,6 +114,9 @@ class sim_server:
     if kind in capability:
       return True
 
+  def register_logical_object_to_host(self, guest):
+    print("TODO")
+
   def __str__(self):
     output ="        *"+self.name+"\n"
     output += "          Server size : "+str(self.server_size)+"U\n"
@@ -136,15 +140,19 @@ class sim_logical_object:
   """Allocate vm or container in a specified DC"""
   def add_logical_object_in_dc(self, dc):
     host = dc.find_suitable_host(self.kind, self.vcpu_alloc, self.gigabytes_ram_alloc)
+    host.register_logical_object_to_host(self)
 
+  def register_logical_object_to_host(self, guest):
+    print("TODO")
+    
   """Force VM or container allocation on a specified server"""
   def add_logical_object_on_server(self, server):
-    print("TODO")
+    print(guest)
 
   def print_name_cpu_ram(self):
     output ="          %"+self.name+"\n"
-    output +="           "+self.vcpu_alloc+"\n"
-    output +="           "+self.gigabytes_ram_alloc+"\n"    
+    output +="           "+str(self.vcpu_alloc)+"\n"
+    output +="           "+str(self.gigabytes_ram_alloc)+"\n"    
 
   def __init__(self, name, vcpu_alloc, gigabytes_ram_alloc):
     self.name = name
@@ -160,12 +168,19 @@ class sim_vm(sim_logical_object):
     self.capability = capability
      
   def __str__(self):
-    print_name_cpu_ram()
+    output = ""
+    self.print_name_cpu_ram()
     if (self.containers):
       for container in self.containers:
         output += str(container)+"\n"
     return output
 
+  def __init__(self, name, vcpu_alloc, gigabytes_ram_alloc):
+    self.name = name
+    self.vcpu_alloc = vcpu_alloc
+    self.gigabytes_ram_alloc = gigabytes_ram_alloc
+    self.containers = []
+    
 class sim_container(sim_logical_object):
   """A container on a server that can execute containers"""
   kind = "container"
@@ -175,7 +190,7 @@ class sim_container(sim_logical_object):
     print("TODO")
 
   def __str__(self):
-    print_name_cpu_ram()
+    self.print_name_cpu_ram()
     return output
 
 def init_infrastructure():
@@ -211,8 +226,8 @@ def init_infrastructure():
   vm1.add_logical_object_in_dc(dc1)
   vm1.set_vm_capability(["container"])
   
-  cont1 = sim_container("dc1_cont1", 1, 1)
-  cont1.add_logical_object_in_dc(dc1)
+  """cont1 = sim_container("dc1_cont1", 1, 1)
+  cont1.add_logical_object_in_dc(dc1)"""
   
   print(dc1)
   print(dc2)
