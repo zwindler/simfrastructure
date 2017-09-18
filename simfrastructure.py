@@ -17,11 +17,11 @@ class sim_datacenter:
 
   def add_rack(self, rack):
     if (not isinstance(rack, sim_rack)):
-      return rack.name+" is not a rack!"
+      print(rack.name+" is not a rack!")
     if ( self.rack_max == None or len(racks) < self.rack_max ):
       self.racks.append(rack)
     else:
-      return self.name+" is full, can't add rack!"
+      print(self.name+" is full, can't add rack!")
 
   def find_suitable_host(self, kind, guest_capacity):
     suitable_objects = []
@@ -62,12 +62,12 @@ class sim_rack:
 
   def add_server(self, server):
     if (not isinstance(server, sim_server)):
-      return server.name+" is not a server!"
+      print(server.name+" is not a server!")
     rack_usage = self.get_rack_usage()
     if ( self.rack_size == None or rack_usage < self.rack_size):
       self.servers.append(server)
     else:
-      return self.name+" is full, can't add server!"
+      print(self.name+" is full, can't add server!")
 
   def __str__(self):
     output = "    +"+self.name+"\n"
@@ -99,6 +99,9 @@ class sim_host:
       return True
     return False
 
+  def register_logical_object_to_host(self, guest):
+    self.guests[guest.kind].append(guest)
+
 class sim_server(sim_host):
   """A 2U server that may run containers or virtual machines or both"""
   def __init__(self, name, vcpu_max_capacity, ram_max_capacity):
@@ -111,9 +114,6 @@ class sim_server(sim_host):
   def set_server_capability(self, capabilities):
     for capability in capabilities:
       self.guests[capability] = []
-
-  def register_logical_object_to_host(self, guest):
-    self.guests[guest.kind].append(guest)
 
   def __str__(self):
     output ="        *"+self.name+"\n"
@@ -137,9 +137,6 @@ class sim_logical_object(sim_host):
   def add_logical_object_in_dc(self, dc):
     host = dc.find_suitable_host(self.kind, self.capacity)
     host.register_logical_object_to_host(self)
-
-  def register_logical_object_to_host(self, guest):
-    print("TODO")
     
   """Force VM or container allocation on a specified server"""
   """def add_logical_object_on_server(self, server):
@@ -152,6 +149,7 @@ class sim_logical_object(sim_host):
   def __init__(self, name, vcpu_alloc, ram_alloc):
     self.name = name
     self.capacity = {"vcpu": vcpu_alloc, "ram": ram_alloc}
+    self.guests = {}
     
 class sim_vm(sim_logical_object):
   """A VM on a server that can execute VMs"""
@@ -165,16 +163,11 @@ class sim_vm(sim_logical_object):
   def __str__(self):
     output = self.print_name_cpu_ram()
     if "containers" in self.guests.keys():
-      output += "            Can run containers\n"
+      output += "              Can run containers\n"
       for container in self.guests["containers"]:
         output += str(container)+"\n"
     return output
 
-  def __init__(self, name, vcpu_alloc, ram_alloc):
-    self.name = name
-    self.capacity = {"vcpu": vcpu_alloc, "ram": ram_alloc}
-    self.guests = {}
-    
 class sim_container(sim_logical_object):
   """A container on a server that can execute containers"""
   kind = "containers"
@@ -199,7 +192,7 @@ def init_infrastructure():
   """Server with 2 sockets, 14 cores each socket, 4 vCPU each core"""
   """Server with 12 sticks of 16GB of RAM"""
   srv1 = sim_server("dc1_rack1_srv1", 2*14*4, 12*16)
-  srv1.set_server_capability(["vms","containers"])
+  srv1.set_server_capability(["vms"])
   rack1.add_server(srv1)
   
   srv2 = sim_server("dc2_rack2_srv2", 2*14*4, 12*16)
