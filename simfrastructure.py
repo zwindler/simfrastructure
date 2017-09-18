@@ -43,20 +43,24 @@ class sim_rack:
   def set_rack_size(self, rack_size):
     self.rack_size = rack_size
 
+  def check_rack_usage(self):
+    rack_usage = 0
+    for server in self.servers:
+      rack_usage += server.server_size
+    return rack_usage
+
   def add_server(self, server):
     if (not isinstance(server, sim_server)):
       return server.name+" is not a server!"
-    rack_use = 0
-    for server in self.servers:
-      rack_use += server.server_size
-    if ( self.rack_size == None or rack_use < self.rack_size):
+    rack_usage = self.check_rack_usage()
+    if ( self.rack_size == None or rack_usage < self.rack_size):
       self.servers = [server]
     else:
       return self.name+" is full, can't add server!"
 
   def __str__(self):
     output = "  Rack name: "+self.name+"\n"
-    output += "  Rack size: "+str(self.rack_size)+"U\n"
+    output += "  Rack usage: "+str(self.check_rack_usage())+"/"+str(self.rack_size)+"U\n"
     output += "  Servers in this rack: \n"
     for server in self.servers:
       output += str(server)
