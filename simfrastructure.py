@@ -102,11 +102,13 @@ class sim_server:
       output += "          Server vCPU capacity: "+str(self.vcpu_max_capacity)+" vCPU\n"
     if self.ram_max_capacity:
       output += "          Server RAM capacity: "+str(self.ram_max_capacity)+" GB RAM\n"
-    output += "          Can server run VMs ? "+str(self.can_run_vms)+"\n"
+    if self.can_run_vms:
+      output += "          Can run VMs\n"
     if (self.vms):
       for vm in self.vms:
         output += str(vm)+"\n"
-    output += "          Can server run containers ? "+str(self.can_run_containers)+"\n"
+    if (self.can_run_containers):
+      output += "          Can run containers\n"
     if (self.containers):
       for container in self.containers:
         output += str(container)+"\n"
