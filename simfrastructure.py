@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-import getopt
-import configparser
+"""import getopt
+import configparser"""
 
 class sim_datacenter:
   """A datacenter that can contain racks"""
@@ -177,7 +177,7 @@ def usage():
   return ''
 
 def main():
-  #default, can be overriden  
+  """#default, can be overriden  
   config_file_path = 'example.cfg'
 
   try:
@@ -194,7 +194,7 @@ def main():
 
   config = configparser.RawConfigParser()
   config.read(config_file_path)
-  test = [config.get('Test', 'Test_output')]
+  test = [config.get('Test', 'Test_output')]"""
 
   init_infrastructure()
   
