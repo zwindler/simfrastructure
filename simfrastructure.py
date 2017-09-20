@@ -54,13 +54,13 @@ def create_tenant_in_dc(tenant_name, x, dc):
 
   for i in range(1, number_of_servers+1):
     srv = sim_server("server"+str(i), 2*14*4, 12*16)
-    srv.set_server_capability(["vms"])
+    srv.set_host_capability(["vms"])
     dc.racks[0].add_server(srv)
   
   """Create enough VMs 8vCPU/16GB RAM to host containers"""
   for i in range(1, number_of_container_runtime_vm+1):
       vm = sim_vm(tenant_name+"_container_runtime_"+str(i), vm_container_runtime_capacity["vcpu"], vm_container_runtime_capacity["ram"])
-      vm.set_vm_capability(["containers"])
+      vm.set_host_capability(["containers"])
       vm.add_logical_object_in_dc(dc)
 
   """Create containers and VMs"""

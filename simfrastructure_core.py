@@ -27,11 +27,11 @@ class sim_datacenter:
     suitable_objects = []
     for rack in self.racks:
       for server in rack.servers:
-        if server.host_capability(kind) and server.has_enough_ressources(guest_capacity):
+        if server.get_host_capability(kind) and server.has_enough_ressources(guest_capacity):
           suitable_objects.append(server)
         if "vms" in server.guests:
           for vm in server.guests["vms"]:
-            if vm.host_capability(kind) and vm.has_enough_ressources(guest_capacity):
+            if vm.get_host_capability(kind) and vm.has_enough_ressources(guest_capacity):
               suitable_objects.append(vm)
     return random.choice(suitable_objects)
 
@@ -104,7 +104,12 @@ class sim_host:
         host_usage["ram"] += logical_object.capacity["ram"]
     return host_usage
 
-  def host_capability(self, kind):
+  """Set the ability to run VMs or containers or both"""
+  def set_host_capability(self, capabilities):
+    for capability in capabilities:
+      self.guests[capability] = []
+
+  def get_host_capability(self, kind):
     if kind in self.guests.keys() :
       return True
     return False
@@ -119,11 +124,6 @@ class sim_server(sim_host):
     self.server_size = 2
     self.capacity = {"vcpu": vcpu_max_capacity, "ram": ram_max_capacity}
     self.guests = {}
-
-  """Set the ability to run VMs or containers or both"""
-  def set_server_capability(self, capabilities):
-    for capability in capabilities:
-      self.guests[capability] = []
 
   def __str__(self):
     global current_indent
@@ -169,11 +169,6 @@ class sim_vm(sim_logical_object):
   """A VM on a server that can execute VMs"""
   kind = "vms"
   label = "VM"
-  
-  """Set the ability to run VMs or containers"""
-  def set_vm_capability(self, capabilities):
-    for capability in capabilities:
-      self.guests[capability] = []
 
   def __str__(self):
     global current_indent
