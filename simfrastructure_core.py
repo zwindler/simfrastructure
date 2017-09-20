@@ -29,7 +29,7 @@ class sim_datacenter:
       for server in rack.servers:
         if server.host_capability(kind) and server.has_enough_ressources(guest_capacity):
           suitable_objects.append(server)
-        if server.guests["vms"]:
+        if "vms" in server.guests:
           for vm in server.guests["vms"]:
             if vm.host_capability(kind) and vm.has_enough_ressources(guest_capacity):
               suitable_objects.append(vm)
@@ -168,7 +168,7 @@ class sim_logical_object(sim_host):
 class sim_vm(sim_logical_object):
   """A VM on a server that can execute VMs"""
   kind = "vms"
-  label = "Virtual Machine"
+  label = "VM"
   
   """Set the ability to run VMs or containers"""
   def set_vm_capability(self, capabilities):
