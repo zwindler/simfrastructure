@@ -3,7 +3,8 @@ import sys
 from math import ceil
 from simfrastructure_core import *
 
-verbose=1
+verbose=0
+current_server_index=1
 
 def create_tenant_in_dc(tenant_name, x, dc):
   """Client with X microservice applications"""
@@ -11,6 +12,7 @@ def create_tenant_in_dc(tenant_name, x, dc):
   tiers = {"frontend" : ["containers", "one_per_module", 0.5, 1], "backend" : ["containers","one_per_module", 1, 2], "database" : ["vms","unique", 4, 16]}
   containers_to_host= []
   vms_to_host = []
+  global current_server_index
 
   """Create containers and VMs"""
   for i in range(1, x+1):
@@ -81,9 +83,10 @@ def create_tenant_in_dc(tenant_name, x, dc):
 
   """Create servers"""
   for i in range(1, number_of_servers+1):
-    srv = sim_server("server"+str(i), server_capacity["vcpu"], server_capacity["ram"])
+    srv = sim_server("server"+str(current_server_index), server_capacity["vcpu"], server_capacity["ram"])
     srv.set_host_capability(["vms"])
     dc.racks[0].add_server(srv)
+    current_server_index += 1
     
   """Host VMs and containers"""
   for vm in vms_to_host:
