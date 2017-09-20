@@ -4,6 +4,12 @@ import random
 current_indent = 0
 verbose = 0
 
+def print_tree():
+  indent= "| "
+  last_indent= "\_"
+  """prints a beautiful dependancy tree"""
+  return max(current_indent-1,0)*indent+min(1,current_indent)*last_indent
+
 class sim_datacenter:
   """A datacenter that can contain racks"""
   def __init__(self, name):
@@ -35,13 +41,21 @@ class sim_datacenter:
               suitable_objects.append(vm)
     return random.choice(suitable_objects)
 
+  def get_dc_free_capacity(self, kind):
+    dc_free_capacity = {"vcpu": 0, "ram": 0}
+    for rack in self.racks:
+      rack_free_capacity = rack.get_rack_free_capacity(kind)
+      dc_free_capacity["vcpu"] += rack_free_capacity["vcpu"]
+      dc_free_capacity["ram"] += rack_free_capacity["ram"]
+    return dc_free_capacity
+
   def __str__(self):
     global current_indent
     output = "Datacenter "+self.name+"\n"
     current_indent += 1
     if verbose:
-      output += current_indent*"  "+"Datacenter size: "+str(self.rack_max)+"\n"
-      output += current_indent*"  "+"Racks in this datacenter: \n"
+      output += print_tree()+"Datacenter size: "+str(self.rack_max)+"\n"
+      output += print_tree()+"Racks in this datacenter: \n"
       current_indent += 1
     for rack in self.racks:
       output += str(rack)
@@ -65,6 +79,14 @@ class sim_rack:
       rack_usage += server.server_size
     return rack_usage
 
+  def get_rack_free_capacity(self, kind):
+    rack_free_capacity = {"vcpu": 0, "ram": 0}
+    for server in self.servers:
+      server_free_capacity = server.get_host_free_capacity(kind)
+      rack_free_capacity["vcpu"] += server_free_capacity["vcpu"]
+      rack_free_capacity["ram"] += server_free_capacity["ram"]
+    return rack_free_capacity
+
   def add_server(self, server):
     if (not isinstance(server, sim_server)):
       print(server.name+" is not a server!")
@@ -76,11 +98,11 @@ class sim_rack:
 
   def __str__(self):
     global current_indent
-    output = current_indent*"  "+"Rack "+self.name+"\n"
+    output = print_tree()+"Rack "+self.name+"\n"
     current_indent += 1
     if verbose:
-      output += current_indent*"  "+"Rack usage: "+str(self.get_rack_usage())+"/"+str(self.rack_size)+"U\n"
-      output += current_indent*"  "+"Servers in this rack: \n"
+      output += print_tree()+"Rack usage: "+str(self.get_rack_usage())+"/"+str(self.rack_size)+"U\n"
+      output += print_tree()+"Servers in this rack: \n"
       current_indent += 1
     for server in self.servers:
       output += str(server)
@@ -103,6 +125,14 @@ class sim_host:
         host_usage["vcpu"] += logical_object.capacity["vcpu"]
         host_usage["ram"] += logical_object.capacity["ram"]
     return host_usage
+
+  def get_host_free_capacity(self, kind):
+    host_free_capacity = {"vcpu": 0, "ram": 0}
+    if self.get_host_capability(kind):
+      usage = self.get_host_usage()
+      for k in usage.keys():
+        host_free_capacity[k] = self.capacity[k] - usage[k] 
+    return host_free_capacity
 
   """Set the ability to run VMs or containers or both"""
   def set_host_capability(self, capabilities):
@@ -127,19 +157,19 @@ class sim_server(sim_host):
 
   def __str__(self):
     global current_indent
-    output = current_indent*"  "+"Server "+self.name+" (Usage: "+str(self.get_host_usage()["vcpu"])+"/"+str(self.capacity["vcpu"])+" vCPU; "+str(self.get_host_usage()["ram"])+"/"+str(self.capacity["ram"])+" GB RAM)\n"
+    output = print_tree()+"Server "+self.name+" (Usage: "+str(self.get_host_usage()["vcpu"])+"/"+str(self.capacity["vcpu"])+" vCPU; "+str(self.get_host_usage()["ram"])+"/"+str(self.capacity["ram"])+" GB RAM)\n"
     current_indent += 1
     if verbose:
-      output += current_indent*"  "+"Server size : "+str(self.server_size)+"U\n"
+      output += print_tree()+"Server size : "+str(self.server_size)+"U\n"
     if "vms" in self.guests.keys():
       if verbose:
-        output += current_indent*"  "+"Can run VMs\n"
+        output += print_tree()+"Can run VMs\n"
       for vm in self.guests["vms"]:
         output += str(vm)
     if "containers" in self.guests.keys():
       current_indent += 1
       if verbose:
-        output += current_indent*"  "+"Can run containers\n"
+        output += print_tree()+"Can run containers\n"
       for container in self.guests["containers"]:
         output += str(container)
       current_indent -= 1
@@ -162,7 +192,7 @@ class sim_logical_object(sim_host):
     self.guests = {}
     
   def __str__(self):
-    output = current_indent*"  "+self.label+" "+self.name+" ("+str(self.capacity["vcpu"])+"vCPU/"+str(self.capacity["ram"])+"GB RAM)\n"
+    output = print_tree()+self.label+" "+self.name+" ("+str(self.capacity["vcpu"])+"vCPU/"+str(self.capacity["ram"])+"GB RAM)\n"
     return output
     
 class sim_vm(sim_logical_object):
@@ -176,7 +206,7 @@ class sim_vm(sim_logical_object):
     if "containers" in self.guests.keys():
       current_indent += 1
       if verbose:
-        output += current_indent*"  "+"Can run containers\n"
+        output += print_tree()+"Can run containers\n"
       for container in self.guests["containers"]:
         output += str(container)
       current_indent -= 1
