@@ -110,9 +110,10 @@ def example_infrastructure():
     create_tenant_in_dc("tenant"+str(i), tiers, 24, dc1)
   
   #print(dc1)
-  graph = Digraph(comment=dc1.name)
-  print(dc1.generate_graph(graph))
-  
+  graph = Digraph(name=dc1.name, format='png')
+  graph = dc1.generate_graph(graph)
+  print(graph)
+  graph.render()
 
 
 def main():
