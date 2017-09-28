@@ -106,10 +106,14 @@ def example_infrastructure():
   """Create 8 clients with the same multitiered microservice application"""
   """Do not share VMs between tenants"""
   tiers = {"frontend" : ["containers", "one_per_module", 0.5, 1], "backend" : ["containers","one_per_module", 1, 2], "database" : ["vms","unique", 4, 16]}
-  for i in range(1,9):
+  for i in range(1,2):
     create_tenant_in_dc("tenant"+str(i), tiers, 24, dc1)
   
-  print(dc1)
+  #print(dc1)
+  graph = Digraph(comment=dc1.name)
+  print(dc1.generate_graph(graph))
+  
+
 
 def main():
   example_infrastructure()

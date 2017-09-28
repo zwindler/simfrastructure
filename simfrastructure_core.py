@@ -1,6 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 import random
+from graphviz import Digraph
 
 current_indent = 0
 verbose = 0
@@ -49,6 +50,17 @@ class sim_datacenter:
       dc_free_capacity["vcpu"] += rack_free_capacity["vcpu"]
       dc_free_capacity["ram"] += rack_free_capacity["ram"]
     return dc_free_capacity
+
+  def generate_graph(self, graph):
+    graph.attr('node', shape='diamond', style='filled', color='lightgrey')
+    graph.node(self.name)
+    for rack in self.racks:
+      with graph.subgraph(name='cluster_'+rack.name) as c:
+        graph.node(rack.name)
+        graph.edge(self.name, rack.name) 
+        c.attr(color='blue')
+        #graph = rack.generate_graph(graph)
+    return graph
 
   def __str__(self):
     global current_indent
