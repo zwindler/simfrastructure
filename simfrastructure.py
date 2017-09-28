@@ -4,7 +4,7 @@ import sys
 from math import ceil
 from simfrastructure_core import *
 
-verbose=0
+verbose=1
 current_server_index=1
 
 def gererate_png(sim_object, type, graph_attributes):
@@ -19,7 +19,6 @@ def gererate_png(sim_object, type, graph_attributes):
 def create_tenant_in_dc(tenant_id, tiers, modules, dc):
   """Client with X microservice applications"""
   tenant_name = "client"+str(tenant_id)
-  modules = []
   containers_to_host= []
   vms_to_host = []
   global current_server_index
