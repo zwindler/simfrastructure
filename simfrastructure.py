@@ -7,8 +7,11 @@ from simfrastructure_core import *
 verbose=0
 current_server_index=1
 
-def gererate_png(sim_object):
-  graph = Digraph(name=sim_object.name, format='png')
+def gererate_png(sim_object, type, graph_attributes):
+  if type == "twopi":
+    graph = Digraph(name=sim_object.name, format='png', engine='twopi', graph_attr=graph_attributes)
+  else:
+    graph = Digraph(name=sim_object.name, format='png', graph_attr=graph_attributes)
   graph = sim_object.generate_graph(graph)
   print(graph)
   graph.render()
@@ -59,7 +62,7 @@ def create_tenant_in_dc(tenant_name, tiers, x, dc):
   
   """Create enough VMs 6vCPU/12GB RAM to host containers"""
   for i in range(1, number_of_container_runtime_vm+1):
-      vm = sim_vm(tenant_name+"_container_runtime_"+str(i), vm_container_runtime_capacity["vcpu"], vm_container_runtime_capacity["ram"])
+      vm = sim_vm(tenant_name+"_docker_"+str(i), vm_container_runtime_capacity["vcpu"], vm_container_runtime_capacity["ram"])
       vm.set_host_capability(["containers"])
       vms_to_host.append(vm)
 
@@ -106,17 +109,15 @@ def example_infrastructure():
   rack1 = sim_rack("dc1_rack1")
   dc1.add_rack(rack1)
 
-  rack2 = sim_rack("dc1_rack2")
-  dc1.add_rack(rack2)
-
   """Create 8 clients with the same multitiered microservice application"""
   """Do not share VMs between tenants"""
-  tiers = {"frontend" : ["containers", "one_per_module", 0.5, 1], "backend" : ["containers","one_per_module", 1, 2], "database" : ["vms","unique", 4, 16]}
-  for i in range(1,2):
-    create_tenant_in_dc("tenant"+str(i), tiers, 24, dc1)
+  tiers = {"front" : ["containers", "one_per_module", 0.5, 1], "back" : ["containers","one_per_module", 1, 2], "db" : ["vms","unique", 8, 16]}
+  for i in range(1,9):
+    create_tenant_in_dc("cli"+str(i), tiers, 24, dc1)
   
   #print(dc1)
-  gererate_png(dc1)
+  graph_attr={"ranksep": "8", "ratio": "auto"}
+  gererate_png(dc1, "twopi", graph_attr)
 
 def main():
   example_infrastructure()

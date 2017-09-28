@@ -52,14 +52,13 @@ class sim_datacenter:
     return dc_free_capacity
 
   def generate_graph(self, graph):
-    graph.attr('node', shape='diamond', style='filled', color='lightgrey')
+    graph.attr('node', shape='diamond', style='filled', color='lightgrey', overlap="false")
     graph.node(self.name)
     for rack in self.racks:
-      with graph.subgraph(name='cluster_'+rack.name) as c:
-        graph.node(rack.name)
-        graph.edge(self.name, rack.name) 
-        c.attr(color='blue')
-        #graph = rack.generate_graph(graph)
+      graph.attr('node', shape='box', style='filled', color='lightgrey')
+      graph.node(rack.name)
+      graph.edge(self.name, rack.name) 
+      graph = rack.generate_graph(graph)
     return graph
 
   def __str__(self):
@@ -108,6 +107,16 @@ class sim_rack:
       self.servers.append(server)
     else:
       print(self.name+" is full, can't add server!")
+
+  def generate_graph(self, graph):
+    for server in self.servers:
+      graph.attr('node', shape='ellipse')
+      graph.node(server.name)
+      graph.edge(self.name, server.name) 
+      with graph.subgraph(name='cluster_'+server.name) as c:
+        c.attr(color='blue')
+        c = server.generate_graph(c)
+    return graph
 
   def __str__(self):
     global current_indent
@@ -159,6 +168,20 @@ class sim_host:
 
   def register_logical_object_to_host(self, guest):
     self.guests[guest.kind].append(guest)
+  
+  def generate_graph(self, graph):
+    for guest_types in self.guests:
+      for guest in self.guests[guest_types]:
+        if guest_types == "containers":
+          graph.attr('node', shape='box3d', style="")
+        elif guest_types == "vms":
+          graph.attr('node', shape='hexagon', style="")
+        graph.node(guest.name)
+        graph.edge(self.name, guest.name) 
+        with graph.subgraph(name='cluster_'+guest.name) as c:
+          c.attr(color='blue')
+          c = guest.generate_graph(c)
+    return graph
 
 class sim_server(sim_host):
   """A 2U server that may run containers or virtual machines or both"""
