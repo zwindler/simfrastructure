@@ -5,7 +5,7 @@ import random
 current_indent = 0
 verbose = 0
 
-def print_tree():
+def print_simple_tree():
   indent= "| "
   last_indent= "\_"
   """prints a beautiful dependancy tree"""
@@ -55,8 +55,8 @@ class sim_datacenter:
     output = "Datacenter "+self.name+"\n"
     current_indent += 1
     if verbose:
-      output += print_tree()+"Datacenter size: "+str(self.rack_max)+"\n"
-      output += print_tree()+"Racks in this datacenter: \n"
+      output += print_simple_tree()+"Datacenter size: "+str(self.rack_max)+"\n"
+      output += print_simple_tree()+"Racks in this datacenter: \n"
       current_indent += 1
     for rack in self.racks:
       output += str(rack)
@@ -99,11 +99,11 @@ class sim_rack:
 
   def __str__(self):
     global current_indent
-    output = print_tree()+"Rack "+self.name+"\n"
+    output = print_simple_tree()+"Rack "+self.name+"\n"
     current_indent += 1
     if verbose:
-      output += print_tree()+"Rack usage: "+str(self.get_rack_usage())+"/"+str(self.rack_size)+"U\n"
-      output += print_tree()+"Servers in this rack: \n"
+      output += print_simple_tree()+"Rack usage: "+str(self.get_rack_usage())+"/"+str(self.rack_size)+"U\n"
+      output += print_simple_tree()+"Servers in this rack: \n"
       current_indent += 1
     for server in self.servers:
       output += str(server)
@@ -158,19 +158,19 @@ class sim_server(sim_host):
 
   def __str__(self):
     global current_indent
-    output = print_tree()+"Server "+self.name+" (Usage: "+str(self.get_host_usage()["vcpu"])+"/"+str(self.capacity["vcpu"])+" vCPU; "+str(self.get_host_usage()["ram"])+"/"+str(self.capacity["ram"])+" GB RAM)\n"
+    output = print_simple_tree()+"Server "+self.name+" (Usage: "+str(self.get_host_usage()["vcpu"])+"/"+str(self.capacity["vcpu"])+" vCPU; "+str(self.get_host_usage()["ram"])+"/"+str(self.capacity["ram"])+" GB RAM)\n"
     current_indent += 1
     if verbose:
-      output += print_tree()+"Server size : "+str(self.server_size)+"U\n"
+      output += print_simple_tree()+"Server size : "+str(self.server_size)+"U\n"
     if "vms" in self.guests.keys():
       if verbose:
-        output += print_tree()+"Can run VMs\n"
+        output += print_simple_tree()+"Can run VMs\n"
       for vm in self.guests["vms"]:
         output += str(vm)
     if "containers" in self.guests.keys():
       current_indent += 1
       if verbose:
-        output += print_tree()+"Can run containers\n"
+        output += print_simple_tree()+"Can run containers\n"
       for container in self.guests["containers"]:
         output += str(container)
       current_indent -= 1
@@ -193,7 +193,7 @@ class sim_logical_object(sim_host):
     self.guests = {}
     
   def __str__(self):
-    output = print_tree()+self.label+" "+self.name+" ("+str(self.capacity["vcpu"])+"vCPU/"+str(self.capacity["ram"])+"GB RAM)\n"
+    output = print_simple_tree()+self.label+" "+self.name+" ("+str(self.capacity["vcpu"])+"vCPU/"+str(self.capacity["ram"])+"GB RAM)\n"
     return output
     
 class sim_vm(sim_logical_object):
@@ -207,7 +207,7 @@ class sim_vm(sim_logical_object):
     if "containers" in self.guests.keys():
       current_indent += 1
       if verbose:
-        output += print_tree()+"Can run containers\n"
+        output += print_simple_tree()+"Can run containers\n"
       for container in self.guests["containers"]:
         output += str(container)
       current_indent -= 1
