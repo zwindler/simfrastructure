@@ -16,8 +16,9 @@ def gererate_png(sim_object, type, graph_attributes):
   print(graph)
   graph.render()
 
-def create_tenant_in_dc(tenant_name, tiers, x, dc):
+def create_tenant_in_dc(tenant_id, tiers, x, dc):
   """Client with X microservice applications"""
+  tenant_name = "client"+str(tenant_id)
   modules = []
   containers_to_host= []
   vms_to_host = []
@@ -113,7 +114,7 @@ def example_infrastructure():
   """Do not share VMs between tenants"""
   tiers = {"front" : ["containers", "one_per_module", 0.5, 1], "back" : ["containers","one_per_module", 1, 2], "db" : ["vms","unique", 8, 16]}
   for i in range(1,9):
-    create_tenant_in_dc("cli"+str(i), tiers, 24, dc1)
+    create_tenant_in_dc(i, tiers, 24, dc1)
   
   #print(dc1)
   graph_attr={"ranksep": "8", "ratio": "auto"}

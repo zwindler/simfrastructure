@@ -14,7 +14,7 @@ def print_simple_tree():
 
 class sim_datacenter:
   """A datacenter that can contain racks"""
-  def __init__(self, name):
+  def __init__(self, name, tenant=0):
     self.name = name
     self.racks = []
     self.rack_max = None
@@ -76,7 +76,7 @@ class sim_datacenter:
   
 class sim_rack:
   """A rack that can contain servers"""  
-  def __init__(self, name):
+  def __init__(self, name, tenant=0):
     self.name = name
     self.servers = []
     self.rack_size = 42
@@ -185,7 +185,7 @@ class sim_host:
 
 class sim_server(sim_host):
   """A 2U server that may run containers or virtual machines or both"""
-  def __init__(self, name, vcpu_max_capacity, ram_max_capacity):
+  def __init__(self, name, vcpu_max_capacity, ram_max_capacity, tenant=0):
     self.name = name
     self.server_size = 2
     self.capacity = {"vcpu": vcpu_max_capacity, "ram": ram_max_capacity}
@@ -222,7 +222,7 @@ class sim_logical_object(sim_host):
   """def add_logical_object_on_server(self, server):
     print(guest)"""
 
-  def __init__(self, name, vcpu_alloc, ram_alloc):
+  def __init__(self, name, vcpu_alloc, ram_alloc, tenant=0):
     self.name = name
     self.capacity = {"vcpu": vcpu_alloc, "ram": ram_alloc}
     self.guests = {}
