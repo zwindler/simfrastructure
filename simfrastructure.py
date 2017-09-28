@@ -7,6 +7,12 @@ from simfrastructure_core import *
 verbose=0
 current_server_index=1
 
+def gererate_png(sim_object):
+  graph = Digraph(name=sim_object.name, format='png')
+  graph = sim_object.generate_graph(graph)
+  print(graph)
+  graph.render()
+
 def create_tenant_in_dc(tenant_name, tiers, x, dc):
   """Client with X microservice applications"""
   modules = []
@@ -110,11 +116,7 @@ def example_infrastructure():
     create_tenant_in_dc("tenant"+str(i), tiers, 24, dc1)
   
   #print(dc1)
-  graph = Digraph(name=dc1.name, format='png')
-  graph = dc1.generate_graph(graph)
-  print(graph)
-  graph.render()
-
+  gererate_png(dc1)
 
 def main():
   example_infrastructure()
