@@ -31,17 +31,18 @@ def create_tenant_in_dc(tenant_id, tiers, x, dc):
     for k, v in tiers.items():
       if v[1] == "one_per_module":
         if v[0] == "containers":
-          cont = sim_container(tenant_name+"_"+module_name+"_"+k, v[2], v[3])
+          cont = sim_container(tenant_name+"_"+module_name+"_"+k, v[2], v[3], tenant_id)
           containers_to_host.append(cont)
         elif v[0] == "vms": 
-          vm = sim_vm(tenant_name+"_"+module_name+"_"+k, v[2], v[3])
+          vm = sim_vm(tenant_name+"_"+module_name+"_"+k, v[2], v[3], tenant_id)
           vms_to_host.append(vm)
   for k, v in tiers.items():
     if v[1] == "unique":
-      vm = sim_vm(tenant_name+"_"+k, v[2], v[3])
-      vms_to_host.append(vm)
-    elif v[1] == "one_per_module":
-      cont = sim_container(tenant_name+"_"+k, v[2], v[3])
+      if v[0] == "vms":
+        vm = sim_vm(tenant_name+"_"+k, v[2], v[3], tenant_id)
+        vms_to_host.append(vm)
+      elif v[1] == "containers":
+      cont = sim_container(tenant_name+"_"+k, v[2], v[3], tenant_id)
       containers_to_host.append(cont)     
 
   """Get containers and vms total footprint"""
@@ -63,7 +64,7 @@ def create_tenant_in_dc(tenant_id, tiers, x, dc):
   
   """Create enough VMs 6vCPU/12GB RAM to host containers"""
   for i in range(1, number_of_container_runtime_vm+1):
-      vm = sim_vm(tenant_name+"_docker_"+str(i), vm_container_runtime_capacity["vcpu"], vm_container_runtime_capacity["ram"])
+      vm = sim_vm(tenant_name+"_docker_"+str(i), vm_container_runtime_capacity["vcpu"], vm_container_runtime_capacity["ram"], tenant_id)
       vm.set_host_capability(["containers"])
       vms_to_host.append(vm)
 

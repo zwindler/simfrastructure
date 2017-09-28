@@ -4,6 +4,7 @@ import random
 from graphviz import Digraph
 
 current_indent = 0
+color_map = ['lightgrey', 'lightpink', 'orange', 'cyan', 'gold', 'lawngreen', 'sienna', 'yellow', 'red', 'hotpink']
 verbose = 0
 
 def print_simple_tree():
@@ -14,10 +15,11 @@ def print_simple_tree():
 
 class sim_datacenter:
   """A datacenter that can contain racks"""
-  def __init__(self, name, tenant=0):
+  def __init__(self, name, tenant_id=0):
     self.name = name
     self.racks = []
     self.rack_max = None
+    self.tenant_id= tenant_id
 
   """Set maximum number of racks in DC"""
   def set_rack_max(self, rack_max):
@@ -52,10 +54,13 @@ class sim_datacenter:
     return dc_free_capacity
 
   def generate_graph(self, graph):
-    graph.attr('node', shape='diamond', style='filled', color='lightgrey', overlap="false")
+    global color_map
+    graph.attr('node', style='filled', color=color_map[self.tenant_id])
+    graph.attr('node', shape='diamond', overlap='false')
     graph.node(self.name)
     for rack in self.racks:
-      graph.attr('node', shape='box', style='filled', color='lightgrey')
+      graph.attr('node', style='filled', color=color_map[rack.tenant_id])
+      graph.attr('node', shape='box', overlap='false')
       graph.node(rack.name)
       graph.edge(self.name, rack.name) 
       graph = rack.generate_graph(graph)
@@ -76,10 +81,11 @@ class sim_datacenter:
   
 class sim_rack:
   """A rack that can contain servers"""  
-  def __init__(self, name, tenant=0):
+  def __init__(self, name, tenant_id=0):
     self.name = name
     self.servers = []
     self.rack_size = 42
+    self.tenant_id = tenant_id
 
   """Set maximum number of servers units in rack"""
   def set_rack_size(self, rack_size):
@@ -110,6 +116,8 @@ class sim_rack:
 
   def generate_graph(self, graph):
     for server in self.servers:
+      global color_map
+      graph.attr('node', style='filled', color=color_map[server.tenant_id])
       graph.attr('node', shape='ellipse')
       graph.node(server.name)
       graph.edge(self.name, server.name) 
@@ -172,6 +180,8 @@ class sim_host:
   def generate_graph(self, graph):
     for guest_types in self.guests:
       for guest in self.guests[guest_types]:
+        global color_map
+        graph.attr('node', style='filled', color=color_map[guest.tenant_id])
         if guest_types == "containers":
           graph.attr('node', shape='box3d', style="")
         elif guest_types == "vms":
@@ -185,11 +195,12 @@ class sim_host:
 
 class sim_server(sim_host):
   """A 2U server that may run containers or virtual machines or both"""
-  def __init__(self, name, vcpu_max_capacity, ram_max_capacity, tenant=0):
+  def __init__(self, name, vcpu_max_capacity, ram_max_capacity, tenant_id=0):
     self.name = name
     self.server_size = 2
     self.capacity = {"vcpu": vcpu_max_capacity, "ram": ram_max_capacity}
     self.guests = {}
+    self.tenant_id = tenant_id
 
   def __str__(self):
     global current_indent
@@ -222,10 +233,11 @@ class sim_logical_object(sim_host):
   """def add_logical_object_on_server(self, server):
     print(guest)"""
 
-  def __init__(self, name, vcpu_alloc, ram_alloc, tenant=0):
+  def __init__(self, name, vcpu_alloc, ram_alloc, tenant_id=0):
     self.name = name
     self.capacity = {"vcpu": vcpu_alloc, "ram": ram_alloc}
     self.guests = {}
+    self.tenant_id = tenant_id
     
   def __str__(self):
     output = print_simple_tree()+self.label+" "+self.name+" ("+str(self.capacity["vcpu"])+"vCPU/"+str(self.capacity["ram"])+"GB RAM)\n"
