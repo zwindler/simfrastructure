@@ -7,10 +7,9 @@ from simfrastructure_core import *
 verbose=0
 current_server_index=1
 
-def create_tenant_in_dc(tenant_name, x, dc):
+def create_tenant_in_dc(tenant_name, tiers, x, dc):
   """Client with X microservice applications"""
   modules = []
-  tiers = {"frontend" : ["containers", "one_per_module", 0.5, 1], "backend" : ["containers","one_per_module", 1, 2], "database" : ["vms","unique", 4, 16]}
   containers_to_host= []
   vms_to_host = []
   global current_server_index
@@ -106,8 +105,9 @@ def example_infrastructure():
 
   """Create 8 clients with the same multitiered microservice application"""
   """Do not share VMs between tenants"""
+  tiers = {"frontend" : ["containers", "one_per_module", 0.5, 1], "backend" : ["containers","one_per_module", 1, 2], "database" : ["vms","unique", 4, 16]}
   for i in range(1,9):
-    create_tenant_in_dc("tenant"+str(i), 24, dc1)
+    create_tenant_in_dc("tenant"+str(i), tiers, 24, dc1)
   
   print(dc1)
 
