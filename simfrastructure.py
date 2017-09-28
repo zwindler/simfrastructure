@@ -42,8 +42,8 @@ def create_tenant_in_dc(tenant_id, tiers, x, dc):
         vm = sim_vm(tenant_name+"_"+k, v[2], v[3], tenant_id)
         vms_to_host.append(vm)
       elif v[1] == "containers":
-      cont = sim_container(tenant_name+"_"+k, v[2], v[3], tenant_id)
-      containers_to_host.append(cont)     
+        cont = sim_container(tenant_name+"_"+k, v[2], v[3], tenant_id)
+        containers_to_host.append(cont)     
 
   """Get containers and vms total footprint"""
   containers_total_vcpu = 0
