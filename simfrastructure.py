@@ -16,7 +16,7 @@ def gererate_png(sim_object, type, graph_attributes):
   print(graph)
   graph.render()
 
-def create_tenant_in_dc(tenant_id, tiers, x, dc):
+def create_tenant_in_dc(tenant_id, tiers, modules, dc):
   """Client with X microservice applications"""
   tenant_name = "client"+str(tenant_id)
   modules = []
@@ -25,16 +25,14 @@ def create_tenant_in_dc(tenant_id, tiers, x, dc):
   global current_server_index
 
   """Create containers and VMs"""
-  for i in range(1, x+1):
-    module_name = "module"+str(i)
-    modules.append(module_name)
+  for module in modules:
     for k, v in tiers.items():
       if v[1] == "one_per_module":
         if v[0] == "containers":
-          cont = sim_container(tenant_name+"_"+module_name+"_"+k, v[2], v[3], tenant_id)
+          cont = sim_container(tenant_name+"_"+module+"_"+k, v[2], v[3], tenant_id)
           containers_to_host.append(cont)
         elif v[0] == "vms": 
-          vm = sim_vm(tenant_name+"_"+module_name+"_"+k, v[2], v[3], tenant_id)
+          vm = sim_vm(tenant_name+"_"+module+"_"+k, v[2], v[3], tenant_id)
           vms_to_host.append(vm)
   for k, v in tiers.items():
     if v[1] == "unique":
@@ -115,8 +113,13 @@ def example_infrastructure():
   """Create 8 clients with the same multitiered microservice application"""
   """Do not share VMs between tenants"""
   tiers = {"front" : ["containers", "one_per_module", 0.5, 1], "back" : ["containers","one_per_module", 1, 2], "db" : ["vms","unique", 8, 16]}
+
+  modules = []
+  for i in range(1,25):
+    modules.append("module"+str(i))
+
   for i in range(1,9):
-    create_tenant_in_dc(i, tiers, 24, dc1)
+    create_tenant_in_dc(i, tiers, modules, dc1)
   
   #print(dc1)
   graph_attr={"ranksep": "8", "ratio": "auto"}
