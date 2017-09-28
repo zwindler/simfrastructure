@@ -149,7 +149,7 @@ class sim_host:
     return self
 
   def get_host_usage(self):
-    host_usage = {"vcpu" : 0, "ram" : 0}
+    host_usage = {"vcpu" : 0.0, "ram" : 0.0}
     for k, v in self.guests.items():
       for logical_object in v:
         host_usage["vcpu"] += logical_object.capacity["vcpu"]
@@ -157,7 +157,7 @@ class sim_host:
     return host_usage
 
   def get_host_free_capacity(self, kind):
-    host_free_capacity = {"vcpu": 0, "ram": 0}
+    host_free_capacity = {"vcpu": 0.0, "ram": 0.0}
     if self.get_host_capability(kind):
       usage = self.get_host_usage()
       for k in usage.keys():

@@ -62,8 +62,8 @@ def create_tenant_in_dc(tenant_id, tiers, x, dc):
   if verbose:
     print("Number of container runtime VMs needed: "+str(number_of_container_runtime_vm))
   
-  """Create enough VMs 6vCPU/12GB RAM to host containers"""
-  for i in range(1, number_of_container_runtime_vm+1):
+  """Create enough VMs 6vCPU/12GB RAM to host containers. BUG : need 1 more in case placement is not ideal"""
+  for i in range(1, number_of_container_runtime_vm+2):
       vm = sim_vm(tenant_name+"_docker_"+str(i), vm_container_runtime_capacity["vcpu"], vm_container_runtime_capacity["ram"], tenant_id)
       vm.set_host_capability(["containers"])
       vms_to_host.append(vm)
@@ -103,6 +103,7 @@ def create_tenant_in_dc(tenant_id, tiers, x, dc):
   for vm in vms_to_host:
     vm.add_logical_object_in_dc(dc)
   for container in containers_to_host:
+    print(container)
     container.add_logical_object_in_dc(dc)
   
 def example_infrastructure():
