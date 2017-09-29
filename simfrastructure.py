@@ -16,12 +16,41 @@ def gererate_png(sim_object, type, graph_attributes):
   print(graph)
   graph.render()
 
+def create_servers_to_host_vms(dc, server_capacity, vms_to_host):
+  global current_server_index
+  """Get vms total footprint"""
+  vms_total_vcpu = 0
+  vms_total_ram = 0
+  for vm in vms_to_host:
+    vms_total_vcpu += vm.capacity["vcpu"]
+    vms_total_ram += vm.capacity["ram"]
+  if verbose:
+    print("Total VMs footprint (applicative and runtime VMs): "+str(vms_total_vcpu)+" vCPU/"+str(vms_total_ram)+" GB RAM")
+
+  server_capacity = { "vcpu": 2*14*4, "ram" : 24*16 }
+  """Remember that we might have server not full in dc to reuse"""
+  dc_free_capacity = dc.get_dc_free_capacity('vms')
+  if verbose:
+    print("Remaining capacity: "+str(dc.get_dc_free_capacity("vms")["vcpu"])+" vCPU/"+str(dc.get_dc_free_capacity("vms")["ram"])+"GB RAM")
+
+  server_vcpu_contraint=max(0,ceil((vms_total_vcpu-dc_free_capacity["vcpu"])/server_capacity["vcpu"]))
+  server_ram_contraint=max(0,ceil((vms_total_ram-dc_free_capacity["ram"])/server_capacity["ram"]))
+  number_of_servers = max(server_vcpu_contraint,server_ram_contraint)
+  if verbose:
+    print("Number of needed servers: "+str(number_of_servers))
+
+  """Create servers"""
+  for i in range(1, number_of_servers+1):
+    srv = sim_server("server"+str(current_server_index), server_capacity["vcpu"], server_capacity["ram"])
+    srv.set_host_capability(["vms"])
+    dc.racks[0].add_server(srv)
+    current_server_index += 1
+
 def create_tenant_in_dc(tenant_id, tiers, modules, dc):
   """Client with X microservice applications"""
   tenant_name = "client"+str(tenant_id)
   containers_to_host= []
   vms_to_host = []
-  global current_server_index
 
   """Create containers and VMs"""
   for module in modules:
@@ -65,37 +94,12 @@ def create_tenant_in_dc(tenant_id, tiers, modules, dc):
       vm.set_host_capability(["containers"])
       vms_to_host.append(vm)
 
-  """Get vms total footprint"""  
-  vms_total_vcpu = 0
-  vms_total_ram = 0
-  for vm in vms_to_host:
-    vms_total_vcpu += vm.capacity["vcpu"]
-    vms_total_ram += vm.capacity["ram"]
-  if verbose:
-    print("Total VMs footprint (applicative and runtime VMs): "+str(vms_total_vcpu)+" vCPU/"+str(vms_total_ram)+" GB RAM")
-
   """How much servers do we need to host vms?"""
   """Server with 2 sockets, 14 cores each socket, 4 vCPU each core"""
   """Server with 24 sticks of 16GB of RAM"""
   server_capacity = { "vcpu": 2*14*4, "ram" : 24*16 }
-  """Remember that we might have server not full in dc to reuse"""
-  dc_free_capacity = dc.get_dc_free_capacity('vms')
-  if verbose:
-    print("Remaining capacity: "+str(dc.get_dc_free_capacity("vms")["vcpu"])+" vCPU/"+str(dc.get_dc_free_capacity("vms")["ram"])+"GB RAM")
-    
-  server_vcpu_contraint=max(0,ceil((vms_total_vcpu-dc_free_capacity["vcpu"])/server_capacity["vcpu"]))
-  server_ram_contraint=max(0,ceil((vms_total_ram-dc_free_capacity["ram"])/server_capacity["ram"]))
-  number_of_servers = max(server_vcpu_contraint,server_ram_contraint)
-  if verbose:
-    print("Number of needed servers: "+str(number_of_servers))
+  create_servers_to_host_vms(dc, server_capacity, vms_to_host)
 
-  """Create servers"""
-  for i in range(1, number_of_servers+1):
-    srv = sim_server("server"+str(current_server_index), server_capacity["vcpu"], server_capacity["ram"])
-    srv.set_host_capability(["vms"])
-    dc.racks[0].add_server(srv)
-    current_server_index += 1
-    
   """Host VMs and containers"""
   for vm in vms_to_host:
     vm.add_logical_object_in_dc(dc)
