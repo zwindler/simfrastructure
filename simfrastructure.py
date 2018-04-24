@@ -19,8 +19,8 @@ def gererate_png(sim_object, type, graph_attributes):
 def create_servers_to_host_vms(dc, server_capacity, vms_to_host):
   global current_server_index
   """Get vms total footprint"""
-  vms_total_vcpu = 0
-  vms_total_ram = 0
+  vms_total_vcpu = 0.0
+  vms_total_ram = 0.0
   for vm in vms_to_host:
     vms_total_vcpu += vm.capacity["vcpu"]
     vms_total_ram += vm.capacity["ram"]
@@ -33,8 +33,8 @@ def create_servers_to_host_vms(dc, server_capacity, vms_to_host):
   if verbose:
     print("Remaining capacity: "+str(dc.get_dc_free_capacity("vms")["vcpu"])+" vCPU/"+str(dc.get_dc_free_capacity("vms")["ram"])+"GB RAM")
 
-  server_vcpu_contraint=max(0,ceil((vms_total_vcpu-dc_free_capacity["vcpu"])/server_capacity["vcpu"]))
-  server_ram_contraint=max(0,ceil((vms_total_ram-dc_free_capacity["ram"])/server_capacity["ram"]))
+  server_vcpu_contraint = max(0,int(ceil((vms_total_vcpu - dc_free_capacity["vcpu"])/server_capacity["vcpu"])))
+  server_ram_contraint = max(0,int(ceil((vms_total_ram - dc_free_capacity["ram"])/server_capacity["ram"])))
   number_of_servers = max(server_vcpu_contraint,server_ram_contraint)
   if verbose:
     print("Number of needed servers: "+str(number_of_servers))
@@ -82,8 +82,8 @@ def create_tenant_in_dc(tenant_id, tiers, modules, dc):
 
   """How much VMs do we need to host containers?"""
   vm_container_runtime_capacity = { "vcpu": 6, "ram" : 12}
-  vm_container_runtime_vcpu_contraint=ceil((containers_total_vcpu)/vm_container_runtime_capacity["vcpu"])
-  vm_container_runtime_ram_contraint=ceil((containers_total_ram)/vm_container_runtime_capacity["ram"])
+  vm_container_runtime_vcpu_contraint = int(ceil((containers_total_vcpu)/vm_container_runtime_capacity["vcpu"]))
+  vm_container_runtime_ram_contraint = int(ceil((containers_total_ram)/vm_container_runtime_capacity["ram"]))
   number_of_container_runtime_vm = max(vm_container_runtime_vcpu_contraint,vm_container_runtime_ram_contraint)
   if verbose:
     print("Number of container runtime VMs needed: "+str(number_of_container_runtime_vm))
@@ -118,10 +118,10 @@ def example_infrastructure():
   tiers = {"front" : ["containers", "one_per_module", 0.5, 1], "back" : ["containers","one_per_module", 1, 2], "db" : ["vms","unique", 8, 16]}
 
   modules = []
-  for i in range(1,25):
-    modules.append("module"+str(i))
+  for i in range(1,11):
+    modules.append("microsvc"+str(i))
 
-  for i in range(1,9):
+  for i in range(1,4):
     create_tenant_in_dc(i, tiers, modules, dc1)
   
   #print(dc1)
