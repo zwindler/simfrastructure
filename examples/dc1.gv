@@ -1,0 +1,542 @@
+digraph dc1 {
+	graph [ranksep=8 ratio=auto]
+	node [color=lightgrey style=filled]
+	node [overlap=false shape=diamond]
+	dc1
+	node [color=lightgrey style=filled]
+	node [overlap=false shape=box]
+	dc1_rack1
+	dc1 -> dc1_rack1
+	node [color=lightgrey style=filled]
+	node [shape=ellipse]
+	server1
+	dc1_rack1 -> server1
+	subgraph cluster_server1 {
+		color=blue
+		node [color=lightpink style=filled]
+		node [shape=hexagon style=""]
+		client1_db
+		server1 -> client1_db
+		subgraph cluster_client1_db {
+			color=blue
+		}
+		node [color=lightpink style=filled]
+		node [shape=hexagon style=""]
+		client1_docker_1
+		server1 -> client1_docker_1
+		subgraph cluster_client1_docker_1 {
+			color=blue
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc1_front
+			client1_docker_1 -> client1_microsvc1_front
+			subgraph cluster_client1_microsvc1_front {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc3_front
+			client1_docker_1 -> client1_microsvc3_front
+			subgraph cluster_client1_microsvc3_front {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc4_front
+			client1_docker_1 -> client1_microsvc4_front
+			subgraph cluster_client1_microsvc4_front {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc6_back
+			client1_docker_1 -> client1_microsvc6_back
+			subgraph cluster_client1_microsvc6_back {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc8_back
+			client1_docker_1 -> client2_microsvc8_back
+			subgraph cluster_client2_microsvc8_back {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc2_back
+			client1_docker_1 -> client3_microsvc2_back
+			subgraph cluster_client3_microsvc2_back {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc5_front
+			client1_docker_1 -> client3_microsvc5_front
+			subgraph cluster_client3_microsvc5_front {
+				color=blue
+			}
+		}
+		node [color=lightpink style=filled]
+		node [shape=hexagon style=""]
+		client1_docker_2
+		server1 -> client1_docker_2
+		subgraph cluster_client1_docker_2 {
+			color=blue
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc5_front
+			client1_docker_2 -> client1_microsvc5_front
+			subgraph cluster_client1_microsvc5_front {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc9_front
+			client1_docker_2 -> client1_microsvc9_front
+			subgraph cluster_client1_microsvc9_front {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc10_front
+			client1_docker_2 -> client1_microsvc10_front
+			subgraph cluster_client1_microsvc10_front {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc1_back
+			client1_docker_2 -> client2_microsvc1_back
+			subgraph cluster_client2_microsvc1_back {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc2_back
+			client1_docker_2 -> client2_microsvc2_back
+			subgraph cluster_client2_microsvc2_back {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc9_front
+			client1_docker_2 -> client2_microsvc9_front
+			subgraph cluster_client2_microsvc9_front {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc10_back
+			client1_docker_2 -> client2_microsvc10_back
+			subgraph cluster_client2_microsvc10_back {
+				color=blue
+			}
+		}
+		node [color=lightpink style=filled]
+		node [shape=hexagon style=""]
+		client1_docker_3
+		server1 -> client1_docker_3
+		subgraph cluster_client1_docker_3 {
+			color=blue
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc2_front
+			client1_docker_3 -> client1_microsvc2_front
+			subgraph cluster_client1_microsvc2_front {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc3_back
+			client1_docker_3 -> client1_microsvc3_back
+			subgraph cluster_client1_microsvc3_back {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc7_back
+			client1_docker_3 -> client1_microsvc7_back
+			subgraph cluster_client1_microsvc7_back {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc8_front
+			client1_docker_3 -> client1_microsvc8_front
+			subgraph cluster_client1_microsvc8_front {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc9_back
+			client1_docker_3 -> client1_microsvc9_back
+			subgraph cluster_client1_microsvc9_back {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc10_back
+			client1_docker_3 -> client1_microsvc10_back
+			subgraph cluster_client1_microsvc10_back {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc2_front
+			client1_docker_3 -> client2_microsvc2_front
+			subgraph cluster_client2_microsvc2_front {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc8_front
+			client1_docker_3 -> client2_microsvc8_front
+			subgraph cluster_client2_microsvc8_front {
+				color=blue
+			}
+		}
+		node [color=lightpink style=filled]
+		node [shape=hexagon style=""]
+		client1_docker_4
+		server1 -> client1_docker_4
+		subgraph cluster_client1_docker_4 {
+			color=blue
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc1_back
+			client1_docker_4 -> client1_microsvc1_back
+			subgraph cluster_client1_microsvc1_back {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc2_back
+			client1_docker_4 -> client1_microsvc2_back
+			subgraph cluster_client1_microsvc2_back {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc4_back
+			client1_docker_4 -> client1_microsvc4_back
+			subgraph cluster_client1_microsvc4_back {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc5_back
+			client1_docker_4 -> client1_microsvc5_back
+			subgraph cluster_client1_microsvc5_back {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc6_front
+			client1_docker_4 -> client1_microsvc6_front
+			subgraph cluster_client1_microsvc6_front {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc7_front
+			client1_docker_4 -> client1_microsvc7_front
+			subgraph cluster_client1_microsvc7_front {
+				color=blue
+			}
+			node [color=lightpink style=filled]
+			node [shape=box3d style=""]
+			client1_microsvc8_back
+			client1_docker_4 -> client1_microsvc8_back
+			subgraph cluster_client1_microsvc8_back {
+				color=blue
+			}
+		}
+		node [color=orange style=filled]
+		node [shape=hexagon style=""]
+		client2_db
+		server1 -> client2_db
+		subgraph cluster_client2_db {
+			color=blue
+		}
+		node [color=orange style=filled]
+		node [shape=hexagon style=""]
+		client2_docker_1
+		server1 -> client2_docker_1
+		subgraph cluster_client2_docker_1 {
+			color=blue
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc1_front
+			client2_docker_1 -> client2_microsvc1_front
+			subgraph cluster_client2_microsvc1_front {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc4_front
+			client2_docker_1 -> client2_microsvc4_front
+			subgraph cluster_client2_microsvc4_front {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc6_front
+			client2_docker_1 -> client2_microsvc6_front
+			subgraph cluster_client2_microsvc6_front {
+				color=blue
+			}
+		}
+		node [color=orange style=filled]
+		node [shape=hexagon style=""]
+		client2_docker_2
+		server1 -> client2_docker_2
+		subgraph cluster_client2_docker_2 {
+			color=blue
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc3_front
+			client2_docker_2 -> client2_microsvc3_front
+			subgraph cluster_client2_microsvc3_front {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc5_front
+			client2_docker_2 -> client2_microsvc5_front
+			subgraph cluster_client2_microsvc5_front {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc5_back
+			client2_docker_2 -> client2_microsvc5_back
+			subgraph cluster_client2_microsvc5_back {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc7_back
+			client2_docker_2 -> client2_microsvc7_back
+			subgraph cluster_client2_microsvc7_back {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc1_front
+			client2_docker_2 -> client3_microsvc1_front
+			subgraph cluster_client3_microsvc1_front {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc1_back
+			client2_docker_2 -> client3_microsvc1_back
+			subgraph cluster_client3_microsvc1_back {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc9_back
+			client2_docker_2 -> client3_microsvc9_back
+			subgraph cluster_client3_microsvc9_back {
+				color=blue
+			}
+		}
+		node [color=orange style=filled]
+		node [shape=hexagon style=""]
+		client2_docker_3
+		server1 -> client2_docker_3
+		subgraph cluster_client2_docker_3 {
+			color=blue
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc3_back
+			client2_docker_3 -> client2_microsvc3_back
+			subgraph cluster_client2_microsvc3_back {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc10_front
+			client2_docker_3 -> client2_microsvc10_front
+			subgraph cluster_client2_microsvc10_front {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc3_front
+			client2_docker_3 -> client3_microsvc3_front
+			subgraph cluster_client3_microsvc3_front {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc7_back
+			client2_docker_3 -> client3_microsvc7_back
+			subgraph cluster_client3_microsvc7_back {
+				color=blue
+			}
+		}
+		node [color=orange style=filled]
+		node [shape=hexagon style=""]
+		client2_docker_4
+		server1 -> client2_docker_4
+		subgraph cluster_client2_docker_4 {
+			color=blue
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc4_back
+			client2_docker_4 -> client2_microsvc4_back
+			subgraph cluster_client2_microsvc4_back {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc6_back
+			client2_docker_4 -> client2_microsvc6_back
+			subgraph cluster_client2_microsvc6_back {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc7_front
+			client2_docker_4 -> client2_microsvc7_front
+			subgraph cluster_client2_microsvc7_front {
+				color=blue
+			}
+			node [color=orange style=filled]
+			node [shape=box3d style=""]
+			client2_microsvc9_back
+			client2_docker_4 -> client2_microsvc9_back
+			subgraph cluster_client2_microsvc9_back {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc2_front
+			client2_docker_4 -> client3_microsvc2_front
+			subgraph cluster_client3_microsvc2_front {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc6_back
+			client2_docker_4 -> client3_microsvc6_back
+			subgraph cluster_client3_microsvc6_back {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc9_front
+			client2_docker_4 -> client3_microsvc9_front
+			subgraph cluster_client3_microsvc9_front {
+				color=blue
+			}
+		}
+		node [color=cyan style=filled]
+		node [shape=hexagon style=""]
+		client3_db
+		server1 -> client3_db
+		subgraph cluster_client3_db {
+			color=blue
+		}
+		node [color=cyan style=filled]
+		node [shape=hexagon style=""]
+		client3_docker_1
+		server1 -> client3_docker_1
+		subgraph cluster_client3_docker_1 {
+			color=blue
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc4_back
+			client3_docker_1 -> client3_microsvc4_back
+			subgraph cluster_client3_microsvc4_back {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc5_back
+			client3_docker_1 -> client3_microsvc5_back
+			subgraph cluster_client3_microsvc5_back {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc7_front
+			client3_docker_1 -> client3_microsvc7_front
+			subgraph cluster_client3_microsvc7_front {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc10_back
+			client3_docker_1 -> client3_microsvc10_back
+			subgraph cluster_client3_microsvc10_back {
+				color=blue
+			}
+		}
+		node [color=cyan style=filled]
+		node [shape=hexagon style=""]
+		client3_docker_2
+		server1 -> client3_docker_2
+		subgraph cluster_client3_docker_2 {
+			color=blue
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc10_front
+			client3_docker_2 -> client3_microsvc10_front
+			subgraph cluster_client3_microsvc10_front {
+				color=blue
+			}
+		}
+		node [color=cyan style=filled]
+		node [shape=hexagon style=""]
+		client3_docker_3
+		server1 -> client3_docker_3
+		subgraph cluster_client3_docker_3 {
+			color=blue
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc4_front
+			client3_docker_3 -> client3_microsvc4_front
+			subgraph cluster_client3_microsvc4_front {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc6_front
+			client3_docker_3 -> client3_microsvc6_front
+			subgraph cluster_client3_microsvc6_front {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc8_back
+			client3_docker_3 -> client3_microsvc8_back
+			subgraph cluster_client3_microsvc8_back {
+				color=blue
+			}
+		}
+		node [color=cyan style=filled]
+		node [shape=hexagon style=""]
+		client3_docker_4
+		server1 -> client3_docker_4
+		subgraph cluster_client3_docker_4 {
+			color=blue
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc3_back
+			client3_docker_4 -> client3_microsvc3_back
+			subgraph cluster_client3_microsvc3_back {
+				color=blue
+			}
+			node [color=cyan style=filled]
+			node [shape=box3d style=""]
+			client3_microsvc8_front
+			client3_docker_4 -> client3_microsvc8_front
+			subgraph cluster_client3_microsvc8_front {
+				color=blue
+			}
+		}
+	}
+}
